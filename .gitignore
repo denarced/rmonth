@@ -102,3 +102,9 @@ venv.bak/
 
 # mypy
 .mypy_cache/
+
+# Ctags tags file
+tags
+
+# Vim swap files
+*.swp
