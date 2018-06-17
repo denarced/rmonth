@@ -1,0 +1,67 @@
+= rmonth
+
+Keep directories (e.g. download dir) clean by listing the files last modified
+n*30 days ago.
+
+== Purpose
+
+Just like everyone else I always have a hard time keeping certain directories
+clean. Those are the ones where I store temporary files and work on really quick
+tryout projects. `~/Downloads` is probably the most common example. I never get
+around cleaning up those dozens of directories and hundreds of files either so
+this tool an idea to get something done. It should go something like this:
+
+. Run the tool automatically once a day.
+. The tool lists n*30 days old files.
+. You take a look at those and only those. It takes ~5min.
+. Keep doing it and the directories should remain at least somewhat tidy.
+
+That's the idea anyway. This is just the latest one. Perhaps the root cause is
+laziness and there's no coding solution for that :)
+
+== Usage
+
+The most simple and straigtforward way to use the script:
+
+```
+./rmonth.py -c config.json
+```
+
+In `config.json` you should have something like:
+
+```
+{
+    "config": {
+        "prune_dirs": [
+            ".git",
+            ".hg",
+            "node_modules"
+        ]
+    },
+    "dirs": [
+        {
+            "path": "/home/joey/Downloads",
+            "recursive": true
+        },
+        {
+            "path": "/home/joey",
+            "recursive": false
+        }
+    ]
+}
+```
+
+Simple enough: `~/Downloads` directory would be scanned recursively and ~/ would
+only be scanned for files directly under ~/. Anything in directories named
+`.git`, `.hg`, and `node_modules` would be ignored including both the files and
+the directories (recursively). I.e. scanning that part of the filesystem stops
+on those directories and therefore the behavior is similar to what `-prune` does
+in `find` command.
+
+=== Config File
+
+Config file can be defined on command line: `./rmonth.py -c config.json`. If
+it's not rmonth checks the current working directory for the file `rmonth.json`.
+And if that doesn't exist `~/.rmonth/rmonth.json` is checked and used if it's
+found.
+
