@@ -1,16 +1,25 @@
 #!/usr/bin/env python3
 
+import argparse
+import json
 import os
 import time
 
 
-def read_config():
-    return {
-        "config": {
-            "prune_dirs": []
-        },
-        "dirs": []
-    }
+def read_config(cli_args):
+    filen = "rmonth.json"
+    paths = [
+        cli_args.config,
+        filen,
+        os.path.join(os.path.expanduser("~"), ".rmonth", filen)
+    ]
+    for each in paths:
+        # Actually only cli_args.config can be None but like this code is
+        # simpler.
+        if each is not None:
+            if os.path.exists(each):
+                with open(each) as f:
+                    return json.load(f)
 
 
 def walk(dirs, prune_dirs):
@@ -41,7 +50,11 @@ def is_old_enough(epoch_secs, path):
 
 
 def main():
-    config = read_config()
+    parser = argparse.ArgumentParser(description="Do the deed")
+    parser.add_argument("-c", "--config")
+    parsed = parser.parse_args()
+    config = read_config(parsed)
+
     epoch_secs = time.time()
     prune_dirs = set(config["config"]["prune_dirs"])
     dirs = (each for each in config["dirs"])
