@@ -9,7 +9,7 @@ Just like everyone else I always have a hard time keeping certain directories
 clean. Those are the ones where I store temporary files and work on really quick
 tryout projects. `~/Downloads` is probably the most common example. I never get
 around cleaning up those dozens of directories and hundreds of files either so
-this tool an idea to get something done. It should go something like this:
+this tool is an idea to get something done. It should go something like this:
 
 . Run the tool automatically once a day.
 . The tool lists n*30 days old files.
