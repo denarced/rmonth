@@ -18,8 +18,16 @@ def read_config(cli_args):
         # simpler.
         if each is not None:
             if os.path.exists(each):
+                config = None
                 with open(each) as f:
-                    return json.load(f)
+                    config = json.load(f)
+                if "config" not in config:
+                    config["config"] = {
+                        "prune_dirs": []
+                    }
+                if "delta" not in config["config"]:
+                    config["config"]["delta"] = 0
+                return config
 
 
 def walk(dirs, prune_dirs):
@@ -42,11 +50,13 @@ def walk(dirs, prune_dirs):
                     dirs.remove(removed)
 
 
-def is_old_enough(epoch_secs, path):
+def is_old_enough(epoch_secs, path, max_delta):
     day_secs = 60 * 60 * 24
     secs_old = int(epoch_secs) - int(os.path.getmtime(path))
     days_old = secs_old // day_secs
-    return days_old != 0 and days_old % 30 == 0
+    if days_old <= max_delta:
+        return False
+    return (days_old % 30) <= max_delta
 
 
 def main():
@@ -59,9 +69,12 @@ def main():
     prune_dirs = set(config["config"]["prune_dirs"])
     dirs = (each for each in config["dirs"])
     files = (each for each in walk(dirs, prune_dirs))
-    old_files = (each for each in files if is_old_enough(epoch_secs, each))
+    delta = config["config"]["delta"]
+    old_files = (each for each in files
+                 if is_old_enough(epoch_secs, each, delta))
     for each in old_files:
         print(each)
+
 
 if __name__ == "__main__":
     main()
